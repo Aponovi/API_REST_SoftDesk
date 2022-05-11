@@ -16,11 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from app.views import ProjectAPIView
+from app.views import ProjectAPIView, ContributorAPIView, IssueAPIView, CommentAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include('app.urls')),
-    path('api/Project', ProjectAPIView.as_view()),
+    path('api/project', ProjectAPIView.as_view()),
+    path('api/contributor', ContributorAPIView.as_view()),
+    path('api/issue', IssueAPIView.as_view()),
+    path('api/comment', CommentAPIView .as_view()),
 ]
