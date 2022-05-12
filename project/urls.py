@@ -22,12 +22,23 @@ from rest_framework_nested import routers
 
 from app.views import ProjectViewset, ContributorViewset, IssueViewset, CommentViewset
 
-router = routers.SimpleRouter()
-router.register('project', ProjectViewset, basename='project')
+router = routers.DefaultRouter()
+router.register(r'projects', ProjectViewset, basename='projects')
+
+
+project_router = routers.NestedSimpleRouter(router, r'projects', lookup='project')
+project_router.register(r'users', ContributorViewset, basename='contributors')
+project_router.register(r'issues', IssueViewset, basename='issues')
+
+
+issue_router = routers.NestedSimpleRouter(router, r'issues', lookup='issue')
+issue_router.register(r'comments', CommentViewset, basename='comments')
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
-    path('api/', include('authentication.urls')),
-    path('api/', include(router.urls)),
+    path('', include('authentication.urls')),
+    path('', include(router.urls)),
+    path('', include(project_router.urls)),
+    path('', include(issue_router.urls)),
 ]
