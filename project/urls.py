@@ -16,14 +16,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from app.views import ProjectAPIView, ContributorAPIView, IssueAPIView, CommentAPIView
+from rest_framework import routers
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_nested import routers
+
+from app.views import ProjectViewset, ContributorViewset, IssueViewset, CommentViewset
+
+router = routers.SimpleRouter()
+router.register('project', ProjectViewset, basename='project')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
-    path('api/', include('app.urls')),
-    path('api/project', ProjectAPIView.as_view()),
-    path('api/contributor', ContributorAPIView.as_view()),
-    path('api/issue', IssueAPIView.as_view()),
-    path('api/comment', CommentAPIView .as_view()),
+    # path('api-auth/', include('rest_framework.urls')),
+    path('api/', include('auth.urls')),
+    path('api/', include(router.urls)),
 ]
