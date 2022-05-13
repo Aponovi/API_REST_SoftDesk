@@ -23,7 +23,7 @@ class ProjectSerializer(ModelSerializer):
                   "title",
                   "description",
                   "type",
-                  "author_user_id",
+                  "user",
                   ]
 
 
