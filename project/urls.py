@@ -41,4 +41,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('', include(project_router.urls)),
     path('', include(issue_router.urls)),
+    # path('projects/<int:project_id>/users/<int:user_id>/', ContributorViewset.as_view({'delete': 'destroy'})),
 ]
