@@ -12,8 +12,7 @@ class Project(models.Model):
     title = models.CharField(max_length=128)
     description = models.CharField(max_length=512)
     type = models.CharField(max_length=16, choices=TYPE_CHOICES)
-    user = models.ManyToManyField(to=settings.AUTH_USER_MODEL, through="Contributor", related_name="users")
-    # author = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='Project_authors')
+    user = models.ManyToManyField(to=settings.AUTH_USER_MODEL, through="Contributor", related_name="projects")
 
 
 class Contributor(models.Model):
@@ -27,9 +26,6 @@ class Contributor(models.Model):
 
     class Meta:
         unique_together = ['user_id', 'project_id']
-
-    # def __str__(self):
-    #     return "{}_{}".format(self.user.__str__(), self.project.__str__())
 
 
 class Issue(models.Model):

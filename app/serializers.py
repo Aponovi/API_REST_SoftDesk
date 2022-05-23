@@ -3,14 +3,19 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.serializers import ModelSerializer
 
 from app.models import Project, Contributor, Issue, Comment
-from authentication.models import User
 
 
 class ContributorSerializer(ModelSerializer):
     class Meta:
         model = Contributor
-        fields = '__all__'
-        read_only__fields = ('project', 'role', 'id')
+        fields = ['user', 'role']
+        optional_fields = ['project']
+        read_only__fields = ['project', 'role', 'id']
+
+    def create(self, validated_data):
+        validated_data['project'] = get_object_or_404(Project, pk=self.context["view"].kwargs.get('project_pk'))
+        contributor = super().create(validated_data)
+        return contributor
 
 
 class ProjectSerializer(ModelSerializer):
@@ -18,11 +23,11 @@ class ProjectSerializer(ModelSerializer):
 
     class Meta:
         model = Project
-        fields = '__all__'
+        fields = ['id', 'title', 'type', 'description', 'user']
         read_field_only = ['id', 'author']
 
     def create(self, validated_data):
-        project = Project.objects.create(**validated_data)
+        project = super().create(validated_data)
         Contributor.objects.create(
             project_id=project.id,
             role="author",
@@ -34,7 +39,7 @@ class ProjectSerializer(ModelSerializer):
 class IssueSerializer(ModelSerializer):
     class Meta:
         model = Issue
-        fields = ['title', 'description', 'tag', 'priority', 'status', 'created_time', 'id']
+        fields = ['id', 'title', 'description', 'tag', 'priority', 'status', 'created_time']
         optional_fields = ['assignee']
         read_only__fields = ['created_time', 'id', 'project']
 
@@ -44,18 +49,20 @@ class IssueSerializer(ModelSerializer):
 
         if 'assignee' not in validated_data:
             validated_data['assignee'] = validated_data['author']
-        issue = Issue.objects.create(**validated_data)
+        issue = super().create(validated_data)
         return issue
 
 
 class CommentSerializer(ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['description', 'id', 'author', 'issue', 'created_time']
+        fields = ['id', 'description', 'created_time']
+        optional_fields = ['author', 'issue']
         read_field_only = ['author', 'issue', 'created_time', 'id']
 
     def create(self, validated_data):
         validated_data['author'] = self.context["request"].user
         validated_data['issue'] = get_object_or_404(Issue, pk=self.context["view"].kwargs.get('issue_pk'))
-        comment = Comment.objects.create(**validated_data)
+        comment = super().create(validated_data)
         return comment
+

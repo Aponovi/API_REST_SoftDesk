@@ -1,8 +1,4 @@
-from django.db.models import Q
-from rest_framework import status
-from rest_framework.generics import get_object_or_404, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from app.models import Project, Contributor, Issue, Comment
@@ -15,13 +11,7 @@ class ProjectViewset(ModelViewSet):
     permission_classes = [IsAuthenticated, IsAuthor]
 
     def get_queryset(self):
-        # return Project.objects.filter(Q(author=self.request.user) | Q(contributor_project=self.request.user))
-        return Project.objects.filter(user=self.request.user)
-
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        return self.request.user.projects.all()
 
 
 class ContributorViewset(ModelViewSet):

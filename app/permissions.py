@@ -13,24 +13,18 @@ class IsAuthor(BasePermission):
         if request.user.is_superuser:
             return True
         if request.method in SAFE_METHODS:
-            if type(obj) == Contributor:
-                return Contributor.objects \
-                    .filter(project__id=obj.project_id) \
-                    .filter(user_id=request.user.pk).exists()
-            if type(obj) == Project:
-                return Contributor.objects \
-                    .filter(project__id=obj.pk) \
-                    .filter(user_id=request.user.pk).exists()
-        if type(obj) == Contributor:
-            return Contributor.objects\
-                .filter(project__id=obj.project_id) \
-                .filter(role="author") \
-                .filter(user_id=request.user.pk).exists()
-        if type(obj) == Project:
-            return Contributor.objects\
-                .filter(project__id=obj.pk) \
-                .filter(role="author") \
-                .filter(user_id=request.user.pk).exists()
+            if isinstance(obj, Contributor):
+                contributors = Contributor.objects.filter(project__id=obj.project_id)
+                return contributors.filter(user_id=request.user.pk).exists()
+            if isinstance(obj, Project):
+                contributors = Contributor.objects.filter(project__id=obj.pk)
+                return contributors.filter(user_id=request.user.pk).exists()
+        if isinstance(obj, Contributor):
+            author = Contributor.objects.filter(project__id=obj.project_id).filter(role="author")
+            return author.filter(user_id=request.user.pk).exists()
+        if isinstance(obj, Project):
+            author = Contributor.objects.filter(project__id=obj.pk).filter(role="author")
+            return author.filter(user_id=request.user.pk).exists()
         return obj.user == request.user
 
 
