@@ -45,9 +45,6 @@ Les étapes 1 à 5 ne sont requises que pout l'installation initiale. Pour les l
 
 Une fois que vous avez lancé le serveur, rendez-vous sur un navigateur web à l'adresse http://localhost:8000/
 
-Les mots de passe des comptes de démonstration ont pour format :\
-user : user1\
-mdp : user1user1
 
 ### Documentation
 
