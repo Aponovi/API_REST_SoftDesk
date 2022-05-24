@@ -3,6 +3,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.serializers import ModelSerializer
 
 from app.models import Project, Contributor, Issue, Comment
+from authentication.models import User
 
 
 class ContributorSerializer(ModelSerializer):
@@ -40,14 +41,16 @@ class IssueSerializer(ModelSerializer):
     class Meta:
         model = Issue
         fields = ['id', 'title', 'description', 'tag', 'priority', 'status', 'created_time']
-        optional_fields = ['assignee']
         read_only__fields = ['created_time', 'id', 'project']
 
     def create(self, validated_data):
         validated_data['author'] = self.context["request"].user
         validated_data['project'] = get_object_or_404(Project, pk=self.context["view"].kwargs.get('project_pk'))
-
-        if 'assignee' not in validated_data:
+        request = self.context.get("request")
+        if 'assignee' in request.data:
+            print("hi there")
+            validated_data['assignee'] = get_object_or_404(User, pk=request.data['assignee'])
+        else:
             validated_data['assignee'] = validated_data['author']
         issue = super().create(validated_data)
         return issue
@@ -65,4 +68,3 @@ class CommentSerializer(ModelSerializer):
         validated_data['issue'] = get_object_or_404(Issue, pk=self.context["view"].kwargs.get('issue_pk'))
         comment = super().create(validated_data)
         return comment
-

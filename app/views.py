@@ -19,7 +19,7 @@ class ContributorViewset(ModelViewSet):
     permission_classes = [IsAuthenticated, IsAuthor]
 
     def get_queryset(self):
-        return Contributor.objects.filter(project=self.kwargs["project_pk"])
+        return Contributor.objects.filter(project_id=self.kwargs["project_pk"]).filter(project__user=self.request.user)
 
 
 class IssueViewset(ModelViewSet):
@@ -35,4 +35,6 @@ class CommentViewset(ModelViewSet):
     permission_classes = [IsAuthenticated, IsAuthor]
 
     def get_queryset(self):
-        return Comment.objects.filter(issue=self.kwargs["issue_pk"])
+        return Comment.objects.filter(issue=self.kwargs["issue_pk"])\
+            .filter(issue__project_id=self.kwargs["project_pk"])\
+            .filter(issue__project__user=self.request.user)
